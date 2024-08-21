@@ -1,0 +1,15 @@
+    # Use uma imagem base do JDK
+FROM openjdk:17-jdk-slim
+
+# Define o diretório de trabalho dentro do container
+WORKDIR /app
+
+# Copia o arquivo build.gradle e o código fonte para dentro do container
+COPY build.gradle ./
+COPY src ./src
+
+# Faz o build do projeto
+RUN ./gradlew build --no-daemon
+
+# Define o ponto de entrada do container, que executará o serviço
+CMD ["java", "-jar", "build/libs/app-service.jar"]

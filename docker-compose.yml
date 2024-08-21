@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  app-service:
+    image: openjdk:17-jdk-slim
+    container_name: app-service
+    build:
+      context: .
+      dockerfile: ./applications/app-service/Dockerfile.app-service
+    volumes:
+      - ./applications/app-service:/app
+      - ~/.gradle:/root/.gradle
+    working_dir: /app
+    command: ./gradlew bootRun
+    ports:
+      - "8080:8080"
+    depends_on:
+      - usecase
+      - model
+    networks:
+      - projeto-src-network
+
+  usecase:
+    image: openjdk:17-jdk-slim
+    container_name: usecase
+    build:
+      context: .
+      dockerfile: ./domain/usecase/Dockerfile.usecase
+    volumes:
+      - ./domain/usecase:/app
+      - ~/.gradle:/root/.gradle
+    working_dir: /app
+    command: ./gradlew build
+    networks:
+      - projeto-src-network
+
+  model:
+    image: openjdk:17-jdk-slim
+    container_name: model
+    build:
+      context: .
+      dockerfile: ./domain/model/Dockerfile.model
+    volumes:
+      - ./domain/model:/app
+      - ~/.gradle:/root/.gradle
+    working_dir: /app
+    command: ./gradlew build
+    networks:
+      - projeto-src-network
+
+networks:
+  projeto-src-network:
+    driver: bridge
